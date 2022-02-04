@@ -1,19 +1,43 @@
 $(document).ready(function(){
     var canvas = $('#canvas')[0];
-    var ctx = canvas.getContext("2d");
     var cWidth = $('#canvas').width();
     var cHeight = $('#canvas').height();
+    var ctx = canvas.getContext("2d");
 
-    var open = true;
+    var player = {direction: "down", positionX: 100, positionY: 100, width: 15, height: 15};
 
-    if(typeof gameLoop != "undefined"){
-        clearInterval(gameLoop);
+    function init(){
+        if(typeof gameLoop != "undefined"){
+            clearInterval(gameLoop);
+        }
+        gameLoop = setInterval(main, 500);
     }
-    gameLoop = setInterval(game, 650);
+    $(document).keydown(function (event){
+        var key = event.which;
 
-    function game(){
+        switch (key){
+            case 39:
+                player.direction = "right";
+                break;
+            case 37:
+                player.direction = "left";
+                break;
+            case 38:
+                player.direction = "top";
+                break;
+            case 40:
+                player.direction = "down";
+                break;
+
+
+
+        }
+    })
+
+    function main(){
         setBackground();
-        pacmanAnimation();
+        movePlayer();
+        drawPlayer();
     }
 
     function setBackground(){
@@ -24,39 +48,40 @@ $(document).ready(function(){
         ctx.strokeRect(0,0, cWidth, cHeight);
         ctx.restore();
     }
+    setBackground();
 
-    function degreesToRadian(dreg){
-        return (dreg * Math.PI)/180;
-    }
-
-    function pacmanAnimation(){
+    function drawPlayer(){
         ctx.save();
-        ctx.beginPath();
-        if (!open){
-            ctx.arc(250, 175, 60, degreesToRadian(40), degreesToRadian(320));
-            ctx.lineTo(250, 175);
-            ctx.lineTo(297, 214);
-            open = true;
-        }else{
-            ctx.arc(250, 175, 60, degreesToRadian(0), degreesToRadian(360));
-            ctx.lineTo(250, 175);
-            open = false;
-        }
-
-        ctx.closePath();
-
-        ctx.fillStyle = "yellow";
-        ctx.fill();
-
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "black";
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.fillStyle = "black";
-        ctx.arc(240, 135, 10, degreesToRadian(0), degreesToRadian(360));
-        ctx.fill();
-        ctx.closePath();
+        ctx.fillStyle = "blue";
+        ctx.fillRect(player.positionX, player.positionY, player.width, player.height);
         ctx.restore();
     }
+
+    function movePlayer(){
+        switch (player.direction){
+
+            case "right":
+                player.positionX += 10;
+                break;
+
+            case "left":
+                player.positionX -= 10;
+                break;
+
+            case "top":
+                player.positionY -= 10;
+                break;
+
+            case "down":
+                player.positionY += 10;
+                break;
+
+            default:
+                player.positionX = player.positionX;
+                player.positionY = player.positionY;
+        }
+    }
+
+    init();
+
 })
