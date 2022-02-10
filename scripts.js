@@ -10,10 +10,16 @@ $(document).ready(function(){
     var coin = {draw: false, positionX: 0, positionY: 0, width: 10, height: 10};
 
     var enemy = new Array(2);
-    var numberOfEnemies = 1;
+    var numberOfEnemies = 0;
+    var spawnEnemy = 10;
 
     for(var i = 0; i < enemy.length; i++){
-        enemy[i] = {direction: "down", positionX: 0, positionY: 0, width: 30, height: 20};
+
+        if(i%2 == 0){
+            enemy[i] = {draw: false, speed: 0, direction: "down", positionX: 0, positionY: 0, width: 30, height: 20};
+        }else{
+            enemy[i] = {draw: false, speed: 0, direction: "down", positionX: cWidth-30, positionY: cHeight-20, width: 30, height: 20};
+        }
     }
 
     function init(){
@@ -47,6 +53,7 @@ $(document).ready(function(){
         coinProbability();
         borderCollision();
         coinCollision();
+        increaseEnemies();
         movePlayer();
         moveEnemies();
         drawPlayer();
@@ -82,8 +89,10 @@ $(document).ready(function(){
     function drawEnemies(number){
         ctx.save();
         for(var i = 0; i < number; i++){
-            ctx.fillStyle = "red";
-            ctx.fillRect(enemy[i].positionX, enemy[i].positionY, enemy[i].width, enemy[i].height);
+            if(enemy[i].draw){
+                ctx.fillStyle = "red";
+                ctx.fillRect(enemy[i].positionX, enemy[i].positionY, enemy[i].width, enemy[i].height);
+            }
         }
         ctx.restore();
     }
@@ -100,6 +109,15 @@ $(document).ready(function(){
             if(timer > 300){
                 coin.draw = false;
             }
+        }
+    }
+
+    function increaseEnemies(){
+        if(spawnEnemy < score && numberOfEnemies < enemy.length){
+            enemy[numberOfEnemies].speed = Math.floor((Math.random()*4)+1);
+            enemy[numberOfEnemies].draw = true;
+            numberOfEnemies++;
+            spawnEnemy += 10;
         }
     }
 
@@ -134,11 +152,11 @@ $(document).ready(function(){
         for(var i = 0; i < numberOfEnemies; i++){
             switch (enemy[i].direction){
                 case "top":
-                    enemy[i].positionY -= 2;
+                    enemy[i].positionY -= enemy[i].speed;
                     break;
 
                 case "down":
-                    enemy[i].positionY += 2;
+                    enemy[i].positionY += enemy[i].speed;
                     break;
 
                 case "stay":
