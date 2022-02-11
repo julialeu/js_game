@@ -22,6 +22,17 @@ $(document).ready(function(){
         }
     }
 
+    var shots = new Array(2);
+
+    for (var i = 0; i < shots.length; i++){
+        if(i%2 == 0){
+                shots[i] = {draw: false, direction: "right", timer: 0, speed: 8, positionX: 8, positionY: 0, width: 20, height: 5};
+        }else{
+            shots[i] = {draw: false, direction: "left", timer: 0, speed: 8, positionX: 8, positionY: 0, width: 20, height: 5};
+
+        }
+    }
+
     function init(){
         if(typeof gameLoop != "undefined"){
             clearInterval(gameLoop);
@@ -54,6 +65,7 @@ $(document).ready(function(){
         borderCollision();
         coinCollision();
         increaseEnemies();
+        shooter();
         movePlayer();
         moveEnemies();
         drawPlayer();
@@ -113,7 +125,7 @@ $(document).ready(function(){
     }
 
     function increaseEnemies(){
-        if(spawnEnemy < score && numberOfEnemies < enemy.length){
+        if(/*spawnEnemy < score &&*/ numberOfEnemies < enemy.length){
             enemy[numberOfEnemies].speed = Math.floor((Math.random()*4)+1);
             enemy[numberOfEnemies].draw = true;
             numberOfEnemies++;
@@ -200,7 +212,6 @@ $(document).ready(function(){
                 enemy[i].direction = "top";
             }
         }
-
     }
 
     function coinCollision(){
@@ -212,6 +223,11 @@ $(document).ready(function(){
         ){
             coin.draw = false;
             score += 10;
+
+            if(player.width < 30 && player.height < 30){
+                player.width += 5;
+                player.height += 5;
+            }
         }
     }
 
@@ -227,6 +243,19 @@ $(document).ready(function(){
             timer++;
         }else{
             timer = 0;
+        }
+    }
+
+    function shooter(){
+        for(var i = 0; i < shots.length; i++){
+            if(enemy[i].draw){
+                shots[i].timer++;
+
+                if(shots[i].timer > 100){
+                    shots[i].timer = 0;
+                    console.log("disparo");
+                }
+            }
         }
     }
 
